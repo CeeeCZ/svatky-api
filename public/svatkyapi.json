@@ -1,0 +1,253 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "SVATKY REST API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://svatkyapi.cz/api"
+    }
+  ],
+  "paths": {
+    "/day": {
+      "get": {
+        "tags": [
+          "day"
+        ],
+        "summary": "Returns info about today",
+        "description": "Only returns information about current day",
+        "operationId": "getTodayInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Day"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date value or format"
+          }
+        }
+      }
+    },
+    "/day/{date}": {
+      "get": {
+        "tags": [
+          "day"
+        ],
+        "summary": "Returns info about given date",
+        "description": "Only returns information about asked date",
+        "operationId": "getDayInfo",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Date in format YYYY-MM-DD",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Day"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date value or format"
+          }
+        }
+      }
+    },
+    "/week/{date}": {
+      "get": {
+        "tags": [
+          "week"
+        ],
+        "summary": "Returns info about week starting with given date (including)",
+        "description": "Returns information about next week starting from given date",
+        "operationId": "getWeekInfo",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Date in format YYYY-MM-DD",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Week"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date value or format"
+          }
+        }
+      }
+    },
+    "/day/{date}/interval/{interval}": {
+      "get": {
+        "tags": [
+          "interval"
+        ],
+        "summary": "Returns info about interval of days starting with given date (including)",
+        "description": "Returns information about interval of days starting from given date",
+        "operationId": "getIntervalInfo",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Date in format YYYY-MM-DD",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "path",
+            "description": "Number of days, greater than zero, positive number",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Week"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date value or format or interval value"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Day": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "dayNumber": {
+            "type": "string",
+            "example": "1"
+          },
+          "dayInWeek": {
+            "type": "string",
+            "enum": [
+              "pondělí",
+              "úterý",
+              "středa",
+              "čtvrtek",
+              "pátek"
+            ]
+          },
+          "monthNumber": {
+            "type": "string",
+            "example": "10"
+          },
+          "month": {
+            "$ref": "#/components/schemas/Month"
+          },
+          "year": {
+            "type": "string",
+            "example": "2022"
+          },
+          "name": {
+            "type": "string",
+            "example": "Igor",
+            "description": "Who is celebrating their name-day on a given date"
+          },
+          "isHoliday": {
+            "type": "boolean",
+            "example": false
+          },
+          "holidayName": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          }
+        }
+      },
+      "Month": {
+        "type": "object",
+        "properties": {
+          "nominative": {
+            "type": "string",
+            "enum": [
+              "leden",
+              "únor",
+              "březen",
+              "duben",
+              "květen",
+              "červen",
+              "červenec",
+              "srpen",
+              "září",
+              "říjen",
+              "listopad",
+              "prosinec"
+            ]
+          },
+          "genitive": {
+            "type": "string",
+            "enum": [
+              "ledna",
+              "února",
+              "března",
+              "dubna",
+              "května",
+              "června",
+              "července",
+              "srpna",
+              "září",
+              "října",
+              "listopadu",
+              "prosince"
+            ]
+          }
+        }
+      },
+      "Week": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Day"
+        }
+      }
+    }
+  }
+}

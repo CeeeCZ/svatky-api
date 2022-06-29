@@ -1,0 +1,28 @@
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+  environment: Production
+  image: node:8.9
+  only:
+    - main
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan svatkyapi.cz >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh root@svatkyapi.cz "
+        cd /var/www/svatky_cz/ &&
+        git fetch --all &&
+        git reset --hard &&
+        git checkout ${CI_COMMIT_SHA:0:8} &&
+        composer install &&
+        php artisan cache:clear &&
+        php artisan config:clear &&
+        php artisan view:clear &&
+        php artisan route:clear
+      "
